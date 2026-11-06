@@ -1,4 +1,4 @@
-const API_ROOT = 'https://yasser-alsleman.onrender.com/api'
+const API_ROOT = '/api'
 
 type ApiOptions = RequestInit & { csrf?: boolean }
 
