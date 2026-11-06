@@ -49,8 +49,17 @@ export async function apiRequest<T>(path: string, options: ApiOptions = {}): Pro
   if (response.status === 204) return undefined as T
   const payload = await response.json().catch(() => null) as { error?: string; details?: unknown } | null
   if (!response.ok) {
-    if (response.status === 401) window.dispatchEvent(new CustomEvent('cms:unauthorized'))
     const message = payload?.error || `Request failed (${response.status}).`
+    if (response.status === 403) {
+      console.error('[CMS API] Request forbidden', {
+        method: init.method || 'GET',
+        path,
+        pageOrigin: window.location.origin,
+        responseUrl: response.url,
+        message,
+      })
+    }
+    if (response.status === 401) window.dispatchEvent(new CustomEvent('cms:unauthorized'))
     const details = formatValidationDetails(payload?.details)
     throw new ApiError(details ? `${message} ${details}` : message, response.status, payload?.details)
   }
